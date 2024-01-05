@@ -1,0 +1,42 @@
+{
+  "frames": [
+    {
+      "position": {
+        "x": 0.0,
+        "y": 0.0
+      },
+      "size": {
+        "x": 0.0,
+        "y": 0.0
+      },
+      "anchor": {
+        "x": 0.0,
+        "y": 0.0
+      },
+      "useOriginalEventData": true,
+      "triggerEvent": false,
+      "eventInfo": "",
+      "eventInt": 0,
+      "eventFloat": 0.0
+    },
+    {
+      "position": {
+        "x": 0.0,
+        "y": 0.0
+      },
+      "size": {
+        "x": 0.0,
+        "y": 0.0
+      },
+      "anchor": {
+        "x": 0.0,
+        "y": 0.0
+      },
+      "useOriginalEventData": true,
+      "triggerEvent": false,
+      "eventInfo": "",
+      "eventInt": 0,
+      "eventFloat": 0.0
+    }
+  ]
+}
