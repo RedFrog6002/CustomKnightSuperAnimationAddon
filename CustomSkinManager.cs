@@ -97,6 +97,7 @@ public class CustomSkinManager
         Log($"CustomSkinManager - Creating {skinable.name}");
 
         tk2dSpriteAnimation newAnim = FrogCore.Utils.CloneTk2dAnimation(orig, "Custom " + orig.name);
+        newAnim.gameObject.DontDestroyOnLoad();
         List<tk2dSpriteCollectionData> datas = new();
         
         foreach (string anim in skinable.folderInfo.Animations)
@@ -108,6 +109,7 @@ public class CustomSkinManager
             tk2dSpriteAnimationClip newClip = new() {name = anim};
             
             tk2dSpriteCollectionData data = new GameObject("Custom " + orig.name + " - " + anim).AddComponent<tk2dSpriteCollectionData>();
+            data.gameObject.DontDestroyOnLoad();
             
             newAnim.clips = newAnim.clips.Where(clip => clip != origClip).Append(newClip).ToArray();
             datas.Add(data);
@@ -138,11 +140,11 @@ public class CustomSkinManager
                 float height = texture.height / simpleInfo.rows;
 
                 int i = 0;
-                for (int y = simpleInfo.rows - 1; y >= 0; y--)
+                for (int y = 0; y < simpleInfo.rows; y++)
                 {
                     if (i >= simpleInfo.frames)
                         break;
-                    for (int x = 0; x < simpleInfo.columns; x--)
+                    for (int x = 0; x < simpleInfo.columns; x++)
                     {
                         tk2dSpriteAnimationFrame frame = new tk2dSpriteAnimationFrame();
                         if (i < origClip.frames.Length)
