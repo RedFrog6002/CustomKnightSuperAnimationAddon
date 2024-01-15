@@ -11,4 +11,6 @@ Unfortunately, since each animation uses its own spritesheet, this is not very m
 
 Requires CustomKnight and FrogCore.
 
+**Spritesheets and Json files for original animations can be exported using [this](https://github.com/RedFrog6002/sseadv)**
+
 Have fun!
