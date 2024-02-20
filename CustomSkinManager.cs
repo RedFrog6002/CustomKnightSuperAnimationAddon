@@ -65,8 +65,13 @@ public class CustomSkinManager
         var skinRoot = Path.GetDirectoryName(current.getSwapperPath());
         foreach(var part in Directory.GetDirectories(skinRoot))
         {
-            var skin = GetOrCreateSkinable(Path.GetFileName(part));
-            skin.Reset();
+            _ = GetOrCreateSkinable(Path.GetFileName(part));
+        }
+
+        foreach(var v in animationSkinables.Values)
+        {
+            v.customSkinManager = this;
+            v.Reset();
         }
 
         foreach(var v in UObject.FindObjectsOfType<tk2dSpriteAnimator>())
@@ -215,8 +220,8 @@ public class CustomSkinManager
             }
         }
 
-        customSpriteAnimations[skinable.goName] = newAnim;
-        customSpriteCollectionDatas[skinable.goName] = datas;
+        customSpriteAnimations[skinable.name] = newAnim;
+        customSpriteCollectionDatas[skinable.name] = datas;
 
         Log($"CustomSkinManager - Finished Creating {skinable.name}");
 
@@ -237,7 +242,10 @@ public class CustomSkinManager
     {
         foreach (var pair in foundReferences.Values) { if (pair.Item1) pair.Item1.Library = pair.Item2; }
     }
-
+    private string GetAtlasName(tk2dSpriteAnimation anim)
+    {
+        return anim.FirstValidClip?.frames[0].spriteCollection?.name ?? anim.name;
+    }
     private void NewSpriteAnimator(tk2dSpriteAnimator anim)
     {
         if(!foundReferences.TryGetValue(anim.GetInstanceID(), out var reference))
@@ -245,16 +253,17 @@ public class CustomSkinManager
             reference.Item1 = anim;
             reference.Item2 = anim.Library;
             if (anim.Library == null) return;
-            reference.Item3 = GetOrCreateSkinable(anim.Library.name);
+            reference.Item3 = GetOrCreateSkinable(GetAtlasName(reference.Item2));
             foundReferences[anim.GetInstanceID()] = reference;
         }
         if (reference.Item3.isSkinned)
         {
-            if (!customSpriteAnimations.TryGetValue(reference.Item2.name, out var animOverride))
+            if (!customSpriteAnimations.TryGetValue(GetAtlasName(reference.Item2), out var animOverride))
             {
                 animOverride = CreateSpriteAnimationFor(reference.Item3, reference.Item2);
             }
             anim.Library = animOverride;
+            //anim.PlayFromFrame(anim.CurrentClip.name, anim.CurrentFrame);
         }
     }
 
