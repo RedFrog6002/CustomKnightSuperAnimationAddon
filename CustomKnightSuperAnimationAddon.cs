@@ -28,6 +28,7 @@ public class CustomKnightSuperAnimationAddon : Mod
 
         customManager = new();
         SkinManager.OnSetSkin += OnSetSkin;
+        CustomKnight.CustomKnight.OnReady += OnSetSkin;
 
         Log("Initialized");
     }

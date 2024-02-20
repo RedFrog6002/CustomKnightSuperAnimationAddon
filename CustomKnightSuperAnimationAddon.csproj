@@ -6,14 +6,9 @@
     <AssemblyVersion>1.0.0.1</AssemblyVersion>
     <OutputPath>bin\$(Configuration)\</OutputPath>
     <LangVersion>latest</LangVersion>
-		<HollowKnightRefs Condition="Exists('/home/saleh/.steam/steam/steamapps/common/Hollow Knight/hollow_knight_Data/Managed/')">/home/saleh/.steam/steam/steamapps/common/Hollow Knight/hollow_knight_Data/Managed/</HollowKnightRefs>
-		<ExportDir Condition="Exists('/home/saleh/Downloads/')">/home/saleh/Downloads/</ExportDir>
-		<HollowKnightRefs Condition="Exists('/home/sfg/Games/gog/hollow-knight/game/Hollow Knight_Data/Managed/')">/home/sfg/Games/gog/hollow-knight/game/Hollow Knight_Data/Managed/</HollowKnightRefs>
-		<HollowKnightRefs Condition="Exists('E:/GOG/Hollow Knight 1.5 Modded/Hollow Knight_Data/Managed/')">E:/GOG/Hollow Knight 1.5 Modded/Hollow Knight_Data/Managed/</HollowKnightRefs>
-		<HollowKnightRefs Condition="Exists('C:\Program Files (x86)\Steam\steamapps\common\Hollow Knight\hollow_knight_Data\Managed/')">C:\Program Files (x86)\Steam\steamapps\common\Hollow Knight\hollow_knight_Data\Managed/</HollowKnightRefs>
-		<ExportDir Condition="Exists('/home/sfg/Documents/Projects/__Exports/')">/home/sfg/Documents/Projects/__Exports/</ExportDir>
-		<ExportDir Condition="Exists('E:\Documents\Projects\__Exports')">E:\Documents\Projects\__Exports</ExportDir>
-		<ExportDir Condition="Exists('C:\Program Files (x86)\Steam\steamapps\common\Hollow Knight\hollow_knight_Data\Managed\Mods')">C:\Program Files (x86)\Steam\steamapps\common\Hollow Knight\hollow_knight_Data\Managed\Mods</ExportDir>
+		<HollowKnightRefs>E:\SteamLibrary\steamapps\common\Hollow Knight\hollow_knight_Data\Managed\</HollowKnightRefs>
+
+		<ExportDir>E:\SteamLibrary\steamapps\common\Hollow Knight\hollow_knight_Data\Managed\Mods</ExportDir>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="CustomKnight">

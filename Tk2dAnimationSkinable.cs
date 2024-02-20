@@ -7,7 +7,6 @@ namespace CustomKnightSuperAnimationAddon;
 public class Tk2dAnimationSkinable
 {
     public string name;
-    public string goName;
     public CustomSkinManager customSkinManager;
 
     public bool isSkinned = false;
@@ -20,10 +19,9 @@ public class Tk2dAnimationSkinable
 
     public void Log(object o) => CustomKnightSuperAnimationAddon.instance.Log(o);
 
-    public Tk2dAnimationSkinable(string name, string goName)
+    public Tk2dAnimationSkinable(string name)
     {
         this.name = name;
-        this.goName = goName;
     }
 
     public void Reset()
@@ -34,6 +32,12 @@ public class Tk2dAnimationSkinable
         animInfos.Clear();
         simpleInfos.Clear();
         advancedInfos.Clear();
+
+        if(customSkinManager?.current == null)
+        {
+            isSkinned = false;
+            return;
+        }
 
         isSkinned = customSkinManager.current.Exists($"{name}/{FolderInfo.FileName}");
         Log($"Skinable {name}: isSkinned = {isSkinned}");
