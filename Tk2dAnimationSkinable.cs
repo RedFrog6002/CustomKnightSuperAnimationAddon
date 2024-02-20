@@ -20,10 +20,9 @@ public class Tk2dAnimationSkinable
 
     public void Log(object o) => CustomKnightSuperAnimationAddon.instance.Log(o);
 
-    public Tk2dAnimationSkinable(string name, string goName)
+    public Tk2dAnimationSkinable(string name)
     {
         this.name = name;
-        this.goName = goName;
     }
 
     public void Reset()

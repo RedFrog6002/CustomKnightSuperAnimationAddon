@@ -20,39 +20,58 @@ public class CustomSkinManager
 
     public Dictionary<string, List<tk2dSpriteCollectionData>> customSpriteCollectionDatas = new();
     public Dictionary<string, tk2dSpriteAnimation> customSpriteAnimations = new();
-    public Dictionary<string, (tk2dSpriteAnimator, tk2dSpriteAnimation, Tk2dAnimationSkinable)> foundReferences = new();
+    public Dictionary<int, (tk2dSpriteAnimator, tk2dSpriteAnimation, Tk2dAnimationSkinable)> foundReferences = new();
 
-    public List<Tk2dAnimationSkinable> animationSkinables = new() {new Tk2dAnimationSkinable("Knight", "Knight")};
+    public Dictionary<string, Tk2dAnimationSkinable> animationSkinables = new() {
+        ["Knight"] = new Tk2dAnimationSkinable("Knight"),
+        ["Geo"] = new Tk2dAnimationSkinable("Geo"),
+        ["Prompts Cln"] = new Tk2dAnimationSkinable("Prompts Cln"),
+        ["HUD Cln"] = new Tk2dAnimationSkinable("HUD Cln")
+    };
 
     public void Log(object o) => CustomKnightSuperAnimationAddon.instance.Log(o); 
 
     public CustomSkinManager()
     {
         Log("Initializing CustomSkinManager");
-        On.tk2dSpriteAnimator.Start += OnSpriteAnimatorStart;
-        foreach (var skinable in animationSkinables)
+        On.tk2dSpriteAnimator.OnEnable += OnSpriteAnimatorOnEnable;
+        foreach (var skinable in animationSkinables.Values)
         {
             skinable.customSkinManager = this;
-            foundReferences.Add(skinable.goName, (null, null, skinable));
         }
-        SearchActive();
         Log("Initialized CustomSkinManager");
         //animationSkinables = SkinManager.Skinables.Values.Where(skinable => skinable is Skinable_Tk2d || skinable is Skinable_Tk2ds).Select(skinable => new Tk2dAnimationSkinnable(skinable.name, this)).ToList();
     }
-
+    private Tk2dAnimationSkinable GetOrCreateSkinable(string name)
+    {
+        if(!animationSkinables.TryGetValue(name, out var result))
+        {
+            result = new(name)
+            {
+                customSkinManager = this
+            };
+            result.Reset();
+            animationSkinables[name] = result;
+        }
+        return result;
+    }
     public void UpdateSkin(ISelectableSkin current)
     {
         Log("CustomSkinManager - Updating Skin");
         this.current = current;
 
         DisposeCurrent();
-        
-        foreach (var pair in foundReferences.Values)
+
+        var skinRoot = Path.GetDirectoryName(current.getSwapperPath());
+        foreach(var part in Directory.GetDirectories(skinRoot))
         {
-            Log($"CustomSkinManager - Updating {pair.Item3}");
-            pair.Item3.Reset();
-            if (pair.Item1 && pair.Item3.isSkinned)
-                pair.Item1.Library = CreateSpriteAnimationFor(pair.Item3, pair.Item2);
+            var skin = GetOrCreateSkinable(Path.GetFileName(part));
+            skin.Reset();
+        }
+
+        foreach(var v in UObject.FindObjectsOfType<tk2dSpriteAnimator>())
+        {
+            NewSpriteAnimator(v);
         }
 
         populated = true;
@@ -71,8 +90,7 @@ public class CustomSkinManager
 
     public void Destroy()
     {
-        On.tk2dSpriteAnimator.Start -= OnSpriteAnimatorStart;
-
+        On.tk2dSpriteAnimator.OnEnable -= OnSpriteAnimatorOnEnable;
         DisposeCurrent();
     }
 
@@ -220,29 +238,29 @@ public class CustomSkinManager
         foreach (var pair in foundReferences.Values) { if (pair.Item1) pair.Item1.Library = pair.Item2; }
     }
 
-    private void OnSpriteAnimatorStart(On.tk2dSpriteAnimator.orig_Start orig, tk2dSpriteAnimator self)
+    private void NewSpriteAnimator(tk2dSpriteAnimator anim)
     {
-        orig(self);
-        if (foundReferences.TryGetValue(self.name, out var reference) && !reference.Item1)
+        if(!foundReferences.TryGetValue(anim.GetInstanceID(), out var reference))
         {
-            reference.Item1 = self;
-            reference.Item2 = self.Library;
-            foundReferences[self.name] = reference;
-            if (reference.Item3.isSkinned)
-                self.Library = CreateSpriteAnimationFor(reference.Item3, self.Library);
+            reference.Item1 = anim;
+            reference.Item2 = anim.Library;
+            if (anim.Library == null) return;
+            reference.Item3 = GetOrCreateSkinable(anim.Library.name);
+            foundReferences[anim.GetInstanceID()] = reference;
+        }
+        if (reference.Item3.isSkinned)
+        {
+            if (!customSpriteAnimations.TryGetValue(reference.Item2.name, out var animOverride))
+            {
+                animOverride = CreateSpriteAnimationFor(reference.Item3, reference.Item2);
+            }
+            anim.Library = animOverride;
         }
     }
 
-    public void SearchActive()
+    private void OnSpriteAnimatorOnEnable(On.tk2dSpriteAnimator.orig_OnEnable orig, tk2dSpriteAnimator self)
     {
-        foreach (tk2dSpriteAnimator animator in UObject.FindObjectsOfType<tk2dSpriteAnimator>())
-        {
-            if (foundReferences.TryGetValue(animator.name, out var reference) && !reference.Item1)
-            {
-                reference.Item1 = animator;
-                reference.Item2 = animator.Library;
-                foundReferences[animator.name] = reference;
-            }
-        }
+        orig(self);
+        NewSpriteAnimator(self);
     }
 }
