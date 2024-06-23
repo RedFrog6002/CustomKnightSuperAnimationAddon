@@ -6,10 +6,16 @@ using System.Collections;
 
 namespace CustomKnightSuperAnimationAddon;
 
+internal class CoroutineHolder : MonoBehaviour
+{
+    public new void StartCoroutine(IEnumerator enumerator) => base.StartCoroutine(enumerator);
+}
+
 public class CustomKnightSuperAnimationAddon : Mod
 {
     public static CustomKnightSuperAnimationAddon instance {get; private set;}
 
+    private CoroutineHolder? coroutineHolder;
     public CustomSkinManager customManager;
     private ISelectableSkin lastSkin = null;
     private Type CustomKnightSpriteLoaderType;
@@ -27,9 +33,21 @@ public class CustomKnightSuperAnimationAddon : Mod
         Log("Initializing");
 
         customManager = new();
+        UpdateSkin(SkinManager.GetCurrentSkin());
         SkinManager.OnSetSkin += OnSetSkin;
 
         Log("Initialized");
+    }
+
+    private CoroutineHolder GetCoroutineHolder()
+    {
+        if (coroutineHolder == null)
+        {
+            GameObject obj = new("CoroutineHolder");
+            UnityEngine.Object.DontDestroyOnLoad(obj);
+            coroutineHolder = obj.AddComponent<CoroutineHolder>();
+        }
+        return coroutineHolder;
     }
 
     private void OnSetSkin(object sender, EventArgs e)
@@ -39,10 +57,15 @@ public class CustomKnightSuperAnimationAddon : Mod
         if(lastSkin?.GetId() != skin.GetId())
         {
             Log($"Skin Changed:  From: {lastSkin?.GetId()} To: {skin.GetId()}");
-            customManager.DisposeCurrent();
-            GameManager.instance.StartCoroutine(WaitForSetSkinComplete());
-            lastSkin = skin;
+            UpdateSkin(skin);
         }
+    }
+
+    private void UpdateSkin(ISelectableSkin skin)
+    {
+        customManager.DisposeCurrent();
+        GetCoroutineHolder().StartCoroutine(WaitForSetSkinComplete());
+        lastSkin = skin;
     }
 
     private IEnumerator WaitForSetSkinComplete()
