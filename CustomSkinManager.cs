@@ -18,13 +18,19 @@ public class CustomSkinManager
     public ISelectableSkin current;
     public bool populated = false;
 
+    // Keyed by texture name.
     public Dictionary<string, List<tk2dSpriteCollectionData>> customSpriteCollectionDatas = new();
     public Dictionary<string, tk2dSpriteAnimation> customSpriteAnimations = new();
+
+    // Keyed by game object name, with possible duplicates.
     public Dictionary<string, (tk2dSpriteAnimator, tk2dSpriteAnimation, Tk2dAnimationSkinable)> foundReferences = new();
 
-    public List<Tk2dAnimationSkinable> animationSkinables = new() {new Tk2dAnimationSkinable("Knight", "Knight")};
+    public List<Tk2dAnimationSkinable> animationSkinables = [
+        new("Knight", ["Knight"]),
+        new("VoidSpells", ["Q Mega"]),  // TODO: Other void spells
+    ];
 
-    public void Log(object o) => CustomKnightSuperAnimationAddon.instance.Log(o); 
+    public void Log(object o) => CustomKnightSuperAnimationAddon.instance.Log(o);
 
     public CustomSkinManager()
     {
@@ -33,7 +39,7 @@ public class CustomSkinManager
         foreach (var skinable in animationSkinables)
         {
             skinable.customSkinManager = this;
-            foundReferences.Add(skinable.goName, (null, null, skinable));
+            foreach (var goName in skinable.goNames) { foundReferences.Add(goName, (null, null, skinable)); }
         }
         SearchActive();
         Log("Initialized CustomSkinManager");
@@ -197,8 +203,8 @@ public class CustomSkinManager
             }
         }
 
-        customSpriteAnimations[skinable.goName] = newAnim;
-        customSpriteCollectionDatas[skinable.goName] = datas;
+        customSpriteAnimations[skinable.name] = newAnim;
+        customSpriteCollectionDatas[skinable.name] = datas;
 
         Log($"CustomSkinManager - Finished Creating {skinable.name}");
 

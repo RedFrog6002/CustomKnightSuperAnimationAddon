@@ -1,4 +1,3 @@
-using System.Security.Policy;
 using UnityEngine;
 using CustomKnightSuperAnimationAddon.Json;
 
@@ -7,7 +6,7 @@ namespace CustomKnightSuperAnimationAddon;
 public class Tk2dAnimationSkinable
 {
     public string name;
-    public string goName;
+    public HashSet<string> goNames;
     public CustomSkinManager customSkinManager;
 
     public bool isSkinned = false;
@@ -20,10 +19,10 @@ public class Tk2dAnimationSkinable
 
     public void Log(object o) => CustomKnightSuperAnimationAddon.instance.Log(o);
 
-    public Tk2dAnimationSkinable(string name, string goName)
+    public Tk2dAnimationSkinable(string name, List<string> goNames)
     {
         this.name = name;
-        this.goName = goName;
+        this.goNames = new(goNames);
     }
 
     public void Reset()
